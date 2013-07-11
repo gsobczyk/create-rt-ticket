@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Create ticket from title and url</title>
+	<script type="text/javascript" src="kango-ui/kango_api.js"></script>
+	<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="popup.js"></script>
+	<script type="text/javascript">
+		KangoAPI.onReady(function() {
+	        $('#popup-close').click(function(event) {
+	                KangoAPI.closeWindow()
+	        });
+		});
+		var rtCreateUrl = 'https://rt.contium.pl/Ticket/Create.html';
+		function createTicket(data){
+			kango.browser.tabs.getCurrent(function(tab) {
+				var subject = data.klient + " - " + data.projekt + " - ";
+				if (data.subject != undefined){
+					subject += data.subject;
+				} else {
+					subject += tab.getTitle().replace("#", "");
+				}
+				var content = tab.getTitle()+" - "+tab.getUrl();
+				if (data.content != undefined){
+					content = data.content;
+				}
+				var cc="";
+				if (data.cc != undefined){
+					cc = data.cc;
+				}
+				var createUrl = rtCreateUrl+
+				"?Queue="+data.queue+
+				"&Subject="+encodeURIComponent(subject)+
+				"&new-DependsOn="+encodeURIComponent(tab.getUrl())+
+				"&Cc="+encodeURIComponent(cc)+
+				"&Content="+encodeURIComponent(content)+
+				"&Object-RT::Ticket--CustomField-16-Value="+encodeURIComponent(data.klient)+
+				"&Object-RT::Ticket--CustomField-21-Value="+encodeURIComponent(data.klient+"/"+data.projekt)+
+				//"&Object-RT::Ticket--CustomField-17-Value="+encodeURIComponent(data.rozliczajacy)+
+				"&Owner=XXX";
+				kango.browser.tabs.create({url: createUrl});
+			});
+			KangoAPI.closeWindow();
+		}
+	</script>
+</head>
+<body>
+	<ul>
+		<li><a href="javascript:void(0)" onclick="createTicket({queue:'33', klient:'Leroy Merlin', projekt:'Aktualizacje'})">lm24 - Zmiany</a></li>
+		<li><a href="javascript:void(0)" onclick="createTicket({queue:'33', klient:'Leroy Merlin', projekt:'LM-opieka-serwisowa-ecommerce}')">lm24 - Błąd - Problemy</a></li>
+		<li><a href="javascript:void(0)" onclick="tag = prompt('Tag');if (tag) createTicket({queue:'81', klient:'Leroy Merlin', projekt:'Aktualizacje', rozliczajacy:'Tomasz Konarski', cc:'lm@unity.pl', content:'Proszę o poranny deploy aplikacji leroymerlin.pl z taga '+tag, subject:'poranny deploy'})">lm - Deploy</a></li>
+	</ul>
+</body>
+</html>
