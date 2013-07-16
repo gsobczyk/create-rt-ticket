@@ -5,23 +5,53 @@
 	<title>Create ticket from title and url</title>
 	<script type="text/javascript" src="kango-ui/kango_api.js"></script>
 	<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="deparam.js"></script>
 	<script type="text/javascript" src="popup.js"></script>
+	<script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js"></script>
 	<script type="text/javascript">
 		KangoAPI.onReady(function() {
 	        $('#popup-close').click(function(event) {
 	                KangoAPI.closeWindow()
 	        });
 		});
+		function deparamHref(url){
+			var pos = url.indexOf('?');
+			if (pos<0){
+				var search = "";
+			} else {
+				var search = url.split("#")[0].substr(url.indexOf('?')+1);
+			}
+			return deparam(search);
+		}
+		function getParameterByName(name, url) {
+			name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+			var regexS = "[\\?&]"+name+"=([^&#]*)";
+			var regex = new RegExp( regexS );
+			var results = regex.exec(url);
+			if( results == null )
+				return "";
+			else
+				return decodeURIComponent(results[1].replace(/\+/g, " "));
+		}
 		var rtCreateUrl = 'https://rt.contium.pl/Ticket/Create.html';
 		function createTicket(data){
 			kango.browser.tabs.getCurrent(function(tab) {
-				var subject = data.klient + " - " + data.projekt + " - ";
+				var subject;
+				if (data.subjectPrefix){
+					subject = data.subjectPrefix  + " - ";
+				} else {
+					subject = data.klient + " - " + data.projekt + " - ";
+				}
 				if (data.subject != undefined){
 					subject += data.subject;
 				} else {
 					subject += tab.getTitle().replace("#", "");
 				}
-				var content = tab.getTitle()+" - "+tab.getUrl();
+				
+				var params = deparamHref(tab.getUrl());
+				subject = Hogan.compile(subject).render(params);
+				
+				var content = subject +" - "+tab.getUrl();
 				if (data.content != undefined){
 					content = data.content;
 				}
@@ -46,10 +76,19 @@
 	</script>
 </head>
 <body>
+	LM:
 	<ul>
 		<li><a href="javascript:void(0)" onclick="createTicket({queue:'33', klient:'Leroy Merlin', projekt:'Aktualizacje'})">lm24 - Zmiany</a></li>
 		<li><a href="javascript:void(0)" onclick="createTicket({queue:'33', klient:'Leroy Merlin', projekt:'LM-opieka-serwisowa-ecommerce}')">lm24 - Błąd - Problemy</a></li>
 		<li><a href="javascript:void(0)" onclick="tag = prompt('Tag');if (tag) createTicket({queue:'81', klient:'Leroy Merlin', projekt:'Aktualizacje', rozliczajacy:'Tomasz Konarski', cc:'lm@unity.pl', content:'Proszę o poranny deploy aplikacji leroymerlin.pl z taga '+tag, subject:'poranny deploy'})">lm - Deploy</a></li>
+	</ul>
+	MIG:
+	<ul>
+		<li><a href="javascript:void(0)" onclick="createTicket({queue:'33', klient:'MIG', projekt:'MIG-opieka-serwisowa'})">MIG - Zmiany</a></li>
+	</ul>
+	Agora:
+	<ul>
+		<li><a href="javascript:void(0)" onclick="createTicket({queue:'33', klient:'Agora', projekt:'Aktualizacje', subjectPrefix:'Agora m{{ID}}'})">Agora - Aktualizacje</a></li>
 	</ul>
 </body>
 </html>
