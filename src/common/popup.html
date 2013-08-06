@@ -25,8 +25,8 @@
 	</ul>
 	MIG:
 	<ul>
-		<li><a href="javascript:void(0)" onclick="createTicket({queue:'33', klient:'MIG', projekt:'MIG-opieka-serwisowa', cc:'anna.stolarczyk@unity.pl,grzegorz.sobczyk@unity.pl,adrian.adamski@unity.pl', subjectPrefix:'MIG Z#{{ID}}'})">MIG - Zmiany</a></li>
-		<li><a href="javascript:void(0)" onclick="tag = prompt('Tag', 'PROD_'+new Date().format('yyyy-MM-dd'));if (tag) createTicket({queue:'81', klient:'MIG', projekt:'Aktualizacje', cc:'anna.stolarczyk@unity.pl,grzegorz.sobczyk@unity.pl,adrian.adamski@unity.pl', content:'Proszę o poranny deploy wszystkich aplikacji MIG\'a z taga '+tag, subject:'poranny deploy', refers: false})">MIG - Deploy</a></li>
+		<li><a href="javascript:void(0)" onclick="createTicket({queue:'33', klient:'MIG', projekt:'Aktualizacje', cc:'anna.stolarczyk@unity.pl,grzegorz.sobczyk@unity.pl,adrian.adamski@unity.pl', subjectPrefix:'MIG Z#{{ID}}'})">MIG - Zmiany</a></li>
+		<li><a href="javascript:void(0)" onclick="tag = prompt('Tag', 'PROD_'+new Date().format('yyyy-MM-dd'));if (tag) createTicket({queue:'81', klient:'MIG', projekt:'MIG-opieka-serwisowa', cc:'anna.stolarczyk@unity.pl,grzegorz.sobczyk@unity.pl,adrian.adamski@unity.pl', content:'Proszę o poranny deploy wszystkich aplikacji MIG\'a z taga '+tag, subject:'poranny deploy', refers: false})">MIG - Deploy</a></li>
 	</ul>
 	Agora:
 	<ul>
