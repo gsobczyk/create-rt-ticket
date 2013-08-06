@@ -6,7 +6,7 @@
     "main.js"
   ], 
   "homepage_url": "https://github.com/gsobczyk/create-rt-ticket", 
-  "version": "0.0.2", 
+  "version": "0.0.4", 
   "browser_button": {
     "caption": "RT", 
     "icon": "icons/rt-18.png", 
