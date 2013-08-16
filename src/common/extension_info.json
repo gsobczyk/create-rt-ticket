@@ -6,16 +6,17 @@
     "main.js"
   ], 
   "homepage_url": "https://github.com/gsobczyk/create-rt-ticket", 
-  "version": "0.0.4", 
+  "version": "0.0.5", 
   "browser_button": {
     "caption": "RT", 
     "icon": "icons/rt-18.png", 
     "tooltipText": "Create RT ticket",
     "popup": {
         "url": "popup.html",
-        "width": 300,
+        "width": 400,
         "height": 520
-    }
+    },
+    "options_page": "options.html"
   }, 
   "name": "Create RT ticket plugin"
 }

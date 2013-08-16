@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Create ticket from title and url</title>
+	<script type="text/javascript" src="kango-ui/kango_api.js"></script>
+	<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+	<script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js"></script>
+	<script type="text/javascript" src="common.js"></script>
+	<script id="tree-template" type="text/mustache">
+{{#categories}}
+	{{category}} - <a href="javascript:void(0)" onclick="removeCategory('{{category}}')">usuń</a>
+	<ul>
+		{{#items}}
+			<li>{{label}} - <a href="javascript:void(0)" onclick="removeItem('{{category}}', '{{label}}')">usuń</a></li>
+		{{/items}}
+		<li><a href="javascript:void(0)" onclick="addItemForCategory('{{category}}')">dodaj kolejny</a></li>
+	</ul>
+{{/categories}}
+	</script>
+	<script type="text/javascript">
+		function initTree() {
+			var template = $('#tree-template').html();
+			var settings = getSettings();
+			var compiled = Hogan.compile(template).render(settings);
+			$('#tree').html(compiled);
+		}
+		function addCategory() {
+			var settings = getSettings();
+			var category = prompt('Kategoria');
+			if (!$.isEmptyObject(category)) {
+				var addedCategory = findElement(settings.categories, "category", category);
+				if ($.isEmptyObject(addedCategory)){
+					addedCategory = {"category":category, data:[]};
+					settings.categories.push(addedCategory);
+					saveSettings(settings);
+				}
+			}
+			initTree();
+			return addedCategory;
+		}
+		function removeCategory(category) {
+			var settings = getSettings();
+			var cat = findElement(settings.categories, "category", category)
+			var idx = settings.categories.indexOf(cat);
+			settings.categories.splice(idx, 1);
+			saveSettings(settings);
+			initTree();
+		}
+		//function addItem(category) {
+		//	var cat = addCategory(category);
+		//}
+		function addItemForCategory(category){
+			$('#category').val(category);
+			$('#addItem').show();
+		}
+		function addItem(){
+			var form = $('form').serializeObject();
+			var settings = getSettings();
+			var cat = findElement(settings.categories, "category", form.category)
+			var label = form.label;
+			delete form.category;
+			delete form.label;
+			cat.items.push({"label":label, "data":form});
+			saveSettings(settings);
+			$('#addItem').hide();
+			initTree();
+		}
+		function removeItem(category, item) {
+			var settings = getSettings();
+			var cat = findElement(settings.categories, "category", category)
+			var idx = findElement(cat.items, "label", item)
+			cat.items.splice(idx, 1);
+			saveSettings(settings);
+			initTree();
+		}
+		KangoAPI.onReady(function() {
+			initTree();
+		});
+	</script>
+</head>
+<body>
+	<div id="tree">
+		
+	</div>
+	<a href="javascript:void(0)" onclick="addCategory()">dodaj kategorię</a>
+	<div id="addItem" style="display: none;">
+		<form>
+			<input type="hidden" name="category" id="category"/>
+			Możliwe jest wpisywanie wyrażeń typu {{ID}}, które będą zastąpione parametrem z URLa.
+			<div>
+				<label for="label">Etykieta</label>
+				<input type="text" name="label" id="label" />
+			</div>
+			<div>
+				<label for="js">własny JS</label>
+				<input type="text" name="js" id="js" />
+			</div>
+			<div>
+				<label for="queue">Id kolejki</label>
+				<input type="text" name="queue" id="queue" />
+			</div>
+			<div>
+				<label for="client">Klient</label>
+				<input type="text" name="client" id="client" />
+			</div>
+			<div>
+				<label for="project">Projekt</label>
+				<input type="text" name="project" id="project" />
+			</div>
+			<div>
+				<label for="cc">CC (bez spacji, oddzielone przecinkiem)</label>
+				<input type="text" name="cc" id="cc" />
+			</div>
+			<div>
+				<label for="subject">Temat (opcjonalny)</label>
+				<input type="text" name="sibject" id="subject" />
+			</div>
+			<div>
+				<label for="content">Treść</label>
+				<textarea name="content" id="content" cols="30" rows="10"></textarea>
+			</div>
+			<div>
+				<label for="referer">Powiązać z odwiedzaną stroną</label>
+				<input type="checkbox" name="referer" id="referer" checked="checked"/>
+			</div>
+			<div>
+				<label for="subjectPrefix">Prefix tytułu</label>
+				<input type="text" name="subjectPrefix" id="subjectPrefix" />
+			</div>
+			<button onclick="addItem(); return false;">Dodaj</button>
+			<button onclick="$('#addItem').hide(); return false;">Anuluj</button>
+		</form>
+	</div>
+</body>
+</html>
