@@ -17,7 +17,7 @@
 				<li><a href="javascript:void(0)" onclick="{{data.js}}">{{label}}</a></li>
 			{{/data.ownJs}}
 			{{^data.ownJs}}
-				<li><a href="javascript:void(0)" onclick="createTicket({queue:'{{data.queue}}', klient:'{{data.client}}', projekt:'{{data.project}}', cc:'{{data.cc}}', subject:'{{data.subject}}', subjectPrefix:'{{data.subjectPrefix}}', content:'{{data.content}}', referer: {{data.referer}} })">{{label}}</li>
+				<li><a href="javascript:void(0)" onclick="createTicket({queue:'{{data.queue}}', klient:'{{data.client}}', projekt:'{{data.project}}', cc:'{{data.cc}}', subject:'{{data.subject}}', subjectPrefix:'{{data.subjectPrefix}}', content:'{{data.content}}', referer: {{data.referer}} })">{{label}}</a></li>
 			{{/data.ownJs}}
 		{{/items}}
 	</ul>
@@ -33,7 +33,11 @@
 		KangoAPI.onReady(function() {
 			initTree();
 			$('#popup-close').click(function(event) {
-				KangoAPI.closeWindow()
+				KangoAPI.closeWindow();
+			});
+			$('#options').click(function(event) {
+				var opened = kango.ui.optionsPage.open();
+				alert("options opened: "+opened);
 			});
 		});
 	</script>
@@ -42,6 +46,8 @@
 	<div id="tree">
 		
 	</div>
+	<button id="options" type="button">opcje</button>
+	<button id="popup-close" type="button">zamknij</button>
 	<!-- 
 	LM:
 	<ul>
