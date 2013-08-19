@@ -43,6 +43,13 @@ var initCategories = {
 						"subjectPrefix":"MIG Z#{{ID}}",
 						"referer":true
 					}
+				},
+				{
+					"label":"MIG - Deploy",
+					"data":{
+						"ownJs":true,
+						"js":"tag = prompt('Tag', 'PROD_'+new Date().format('yyyy-MM-dd'));if (tag) createTicket({queue:'81', klient:'MIG', projekt:'MIG-opieka-serwisowa', cc:'anna.stolarczyk@unity.pl,grzegorz.sobczyk@unity.pl,adrian.adamski@unity.pl', content:'Proszę o poranny deploy wszystkich aplikacji MIG\'a z taga '+tag, subject:'poranny deploy', refers: false})"
+					}
 				}
 			]
 		},
@@ -147,7 +154,7 @@ function createTicket(data) {
 			"&Object-RT::Ticket--CustomField-21-Value="+encodeURIComponent(data.klient+"/"+data.projekt)+
 				// "&Object-RT::Ticket--CustomField-17-Value="+encodeURIComponent(data.rozliczajacy)+
 			"&Owner=XXX";
-		kango.browser.tabs.create({url: createUrl});
+		kango.invokeAsync('kango.browser.tabs.create', {url:createUrl} );
 	});
 	KangoAPI.closeWindow();
 }
