@@ -15,8 +15,8 @@
         "url": "popup.html",
         "width": 400,
         "height": 520
-    },
-    "options_page": "options.html"
+    }
   }, 
-  "name": "Create RT ticket plugin"
+  "name": "Create RT ticket plugin",
+  "options_page": "options.html"
 }
