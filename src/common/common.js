@@ -1,4 +1,4 @@
-var initCategories = {
+var initialCategories = {
 	"categories":[
 		{
 			"category":"LM",
@@ -7,7 +7,7 @@ var initCategories = {
 					"label":"lm24 - Zmiany",
 					"data":{
 						"queue":33,
-						"client":"LeroyMerlin",
+						"client":"Leroy Merlin",
 						"project":"Aktualizacje",
 						"referer":true
 					}
@@ -16,7 +16,7 @@ var initCategories = {
 					"label":"lm24 - Błąd - Problemy",
 					"data":{
 						"queue":33,
-						"client":"LeroyMerlin",
+						"client":"Leroy Merlin",
 						"project":"LM-opieka-serwisowa-ecommerce",
 						"referer":true
 					}
@@ -25,7 +25,7 @@ var initCategories = {
 					"label":"LM - Deploy",
 					"data":{
 						"ownJs":true,
-						"js":"tag = prompt('Tag', new Date().format('yyyy-MM-dd'));if (tag) createTicket({queue:'81', klient:'Leroy Merlin', projekt:'Aktualizacje', cc:'lm@unity.pl', content:'Proszę o poranny deploy aplikacji leroymerlin.pl z taga '+tag, subject:'poranny deploy', referer: 'false'})"
+						"js":"tag = prompt('Tag', $.formatDateTime('yy-mm-dd', new Date())); if (tag) createTicket({queue:'81', klient:'Leroy Merlin', projekt:'Aktualizacje', cc:'lm@unity.pl', content:'Proszę o poranny deploy aplikacji leroymerlin.pl z taga '+tag, subject:'poranny deploy', referer: 'false'})"
 					}
 				}
 			]
@@ -42,6 +42,13 @@ var initCategories = {
 						"cc":"anna.stolarczyk@unity.pl,grzegorz.sobczyk@unity.pl,adrian.adamski@unity.pl",
 						"subjectPrefix":"MIG Z#{{ID}}",
 						"referer":true
+					}
+				},
+				{
+					"label":"MIG - Deploy",
+					"data":{
+						"ownJs":true,
+						"js":"tag = prompt('Tag', 'PROD_'+$.formatDateTime('yy-mm-dd', new Date()));if (tag) createTicket({queue:'81', klient:'MIG', projekt:'MIG-opieka-serwisowa', cc:'anna.stolarczyk@unity.pl,grzegorz.sobczyk@unity.pl,adrian.adamski@unity.pl', content:'Proszę o poranny deploy wszystkich aplikacji MIG\\\'a z taga '+tag, subject:'poranny deploy', refers: false})"
 					}
 				}
 			]
@@ -82,7 +89,7 @@ function findElement(arr, propName, propValue) {
 // will return undefined if not found; you could return a default instead
 }
 function initSettings() {
-	return initCategories;
+	return initialCategories;
 }
 
 function deparamHref(url) {
@@ -152,40 +159,96 @@ function createTicket(data) {
 	KangoAPI.closeWindow();
 }
 
-Date.prototype.format = function(format) // author: meizz
-{
-	var o = {
-		"M+" : this.getMonth() + 1, // month
-		"d+" : this.getDate(), // day
-		"h+" : this.getHours(), // hour
-		"m+" : this.getMinutes(), // minute
-		"s+" : this.getSeconds(), // second
-		"q+" : Math.floor((this.getMonth() + 3) / 3), // quarter
-		"S" : this.getMilliseconds() // millisecond
-	}
+(function( $ ) {
+  $.fn.serializeObject = function() {
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+      if (o[this.name] !== undefined) {
+        if (!o[this.name].push) {
+          o[this.name] = [ o[this.name] ];
+        }
+        o[this.name].push(this.value || '');
+      } else {
+        o[this.name] = this.value || '';
+      }
+    });
+    return o;
+  };
+}( jQuery ));
 
-	if (/(y+)/.test(format))
-		format = format.replace(RegExp.$1, (this.getFullYear() + "")
-				.substr(4 - RegExp.$1.length));
-	for ( var k in o)
-		if (new RegExp("(" + k + ")").test(format))
-			format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k]
-					: ("00" + o[k]).substr(("" + o[k]).length));
-	return format;
+function initPopupTree() {
+  var template = $('#tree-template').html();
+  var settings = getSettings();
+  var compiled = Hogan.compile(template).render(settings);
+  $('#tree').html(compiled);
+  $('button.action').click(function (){
+    var onclick = $(this).data('onclick');
+    eval(onclick);
+  });
 }
 
-$.fn.serializeObject = function() {
-	var o = {};
-	var a = this.serializeArray();
-	$.each(a, function() {
-		if (o[this.name] !== undefined) {
-			if (!o[this.name].push) {
-				o[this.name] = [ o[this.name] ];
-			}
-			o[this.name].push(this.value || '');
-		} else {
-			o[this.name] = this.value || '';
-		}
-	});
-	return o;
-};
+
+function initOptionsTree() {
+  var template = $('#tree-template').html();
+  var settings = getSettings();
+  var compiled = Hogan.compile(template).render(settings);
+  $('#tree').html(compiled);
+  $('button.action').click(function (){
+    var onclick = $(this).data('onclick');
+    eval(onclick);
+  });
+}
+function addCategory() {
+  var settings = getSettings();
+  var category = prompt('Kategoria');
+  if (!$.isEmptyObject(category)) {
+    var addedCategory = findElement(settings.categories, "category", category);
+    if ($.isEmptyObject(addedCategory)){
+      addedCategory = {"category":category, data:[]};
+      settings.categories.push(addedCategory);
+      saveSettings(settings);
+    }
+  }
+  initOptionsTree();
+  return addedCategory;
+}
+function removeCategory(category) {
+  var settings = getSettings();
+  var cat = findElement(settings.categories, "category", category)
+  var idx = settings.categories.indexOf(cat);
+  settings.categories.splice(idx, 1);
+  saveSettings(settings);
+  initOptionsTree();
+}
+//function addItem(category) {
+//	var cat = addCategory(category);
+//}
+function addItemForCategory(category){
+  $('#category').val(category);
+  $('#addItem').show();
+}
+function addItem(){
+  var form = $('form').serializeObject();
+  var settings = getSettings();
+  var cat = findElement(settings.categories, "category", form.category)
+  var label = form.label;
+  delete form.category;
+  delete form.label;
+  cat.items.push({"label":label, "data":form});
+  saveSettings(settings);
+  $('#addItem').hide();
+  initOptionsTree();
+}
+function removeItem(category, item) {
+  var settings = getSettings();
+  var cat = findElement(settings.categories, "category", category)
+  var idx = findElement(cat.items, "label", item)
+  cat.items.splice(idx, 1);
+  saveSettings(settings);
+  initOptionsTree();
+}
+function resetSettings(){
+  saveSettings({});
+  initOptionsTree();
+}

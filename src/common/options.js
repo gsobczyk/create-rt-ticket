@@ -1,0 +1,4 @@
+KangoAPI.onReady(function() {
+  initOptionsTree();
+});
+

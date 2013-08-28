@@ -4,42 +4,26 @@
 	<meta charset="UTF-8" />
 	<title>Create ticket from title and url</title>
 	<script type="text/javascript" src="kango-ui/kango_api.js"></script>
-	<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="jquery-1.10.2.js"></script>
+	<script type="text/javascript" src="jquery.formatDateTime.js"></script>
 	<script type="text/javascript" src="deparam.js"></script>
-	<script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js"></script>
+	<script type="text/javascript" src="hogan-2.0.0.js"></script>
 	<script type="text/javascript" src="common.js"></script>
+	<script type="text/javascript" src="popup.js"></script>
 	<script id="tree-template" type="text/mustache">
 {{#categories}}
 	{{category}}:
 	<ul>
 		{{#items}}
 			{{#data.ownJs}}
-				<li><a href="javascript:void(0)" onclick="{{data.js}}">{{label}}</a></li>
+				<li><button class="action" data-onclick="{{data.js}}">{{label}}</button></li>
 			{{/data.ownJs}}
 			{{^data.ownJs}}
-				<li><a href="javascript:void(0)" onclick="createTicket({queue:'{{data.queue}}', klient:'{{data.client}}', projekt:'{{data.project}}', cc:'{{data.cc}}', subject:'{{data.subject}}', subjectPrefix:'{{data.subjectPrefix}}', content:'{{data.content}}', referer: {{data.referer}} })">{{label}}</a></li>
+				<li><button class="action" data-onclick="createTicket({queue:'{{data.queue}}', klient:'{{data.client}}', projekt:'{{data.project}}', cc:'{{data.cc}}', subject:'{{data.subject}}', subjectPrefix:'{{data.subjectPrefix}}', content:'{{data.content}}', referer: {{data.referer}} })">{{label}}</button></li>
 			{{/data.ownJs}}
 		{{/items}}
 	</ul>
 {{/categories}}
-	</script>
-	<script type="text/javascript">
-		function initTree() {
-			var template = $('#tree-template').html();
-			var settings = getSettings();
-			var compiled = Hogan.compile(template).render(settings);
-			$('#tree').html(compiled);
-		}
-		KangoAPI.onReady(function() {
-			initTree();
-			$('#popup-close').click(function(event) {
-				KangoAPI.closeWindow();
-			});
-			$('#options').click(function(event) {
-				var opened = kango.ui.optionsPage.open();
-				alert("options opened: "+opened);
-			});
-		});
 	</script>
 </head>
 <body>
