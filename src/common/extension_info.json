@@ -3,7 +3,12 @@
   "description": "Create tickets from page title", 
   "creator": "gsobczyk", 
   "background_scripts": [
-    "main.js"
+    "main.js",
+    "jquery-1.10.2.js",
+    "jquery.formatDateTime.js",
+    "hogan-2.0.0.js",
+    "common.js",
+    "deparam.js"
   ], 
   "homepage_url": "https://github.com/gsobczyk/create-rt-ticket", 
   "version": "0.0.6", 
