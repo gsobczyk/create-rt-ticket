@@ -19,7 +19,7 @@
 				<li><button class="action" data-onclick="{{data.js}}">{{label}}</button></li>
 			{{/data.ownJs}}
 			{{^data.ownJs}}
-				<li><button class="action" data-onclick="createTicket({queue:'{{data.queue}}', klient:'{{data.client}}', projekt:'{{data.project}}', cc:'{{data.cc}}', subject:'{{data.subject}}', subjectPrefix:'{{data.subjectPrefix}}', content:'{{data.content}}', referer: {{data.referer}} })">{{label}}</button></li>
+				<li><button class="action" data-onclick="createTicket({queue:'{{data.queue}}', klient:'{{data.client}}', projekt:'{{data.project}}', cc:'{{data.cc}}', subject:'{{data.subject}}', subjectPrefix:'{{data.subjectPrefix}}', content:'{{data.content}}', referer: {{data.referer}}, addOwner: {{data.addOwner}}, remove:'{{data.remove}}' })">{{label}}</button></li>
 			{{/data.ownJs}}
 		{{/items}}
 	</ul>

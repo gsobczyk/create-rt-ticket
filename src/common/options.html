@@ -14,11 +14,16 @@
 	{{category}} - <button class="action" data-onclick="removeCategory('{{category}}')">usuń</button>
 	<ul>
 		{{#items}}
-			<li>{{label}} - <button class="action" data-onclick="removeItem('{{category}}', '{{label}}')">usuń</button></li>
+			<li>{{label}} - <button class="action" data-onclick="removeItem('{{category}}', '{{label}}')">usuń</button> <button class="action" data-onclick="editItem('{{category}}', '{{label}}')">edytuj</button></li>
 		{{/items}}
 		<li><button class="action" data-onclick="addItemForCategory('{{category}}')">dodaj kolejny</button></li>
 	</ul>
 {{/categories}}
+<div>
+	<label for="ownerId">id usera (pobrany np. przy użyciu żądania https://rt.contium.pl/REST/1.0/user/gsobczyk)</label>
+	<input type="text" name="ownerId" id="ownerId" value="{{owner}}"/>
+	<button class="action" data-onclick="saveOwner()">zapisz</button>
+</div>
 	</script>
 </head>
 <body>
@@ -26,7 +31,7 @@
 		
 	</div>
 	<button class="action" data-onclick="addCategory()">dodaj kategorię</button>
-	<button class="action" data-onclick="resetSettings()">przywróć domyślne</button>
+	<button class="action" data-onclick="resetCategories()">przywróć domyślne kategorie</button>
 	<div id="addItem" style="display: none;">
 		<form>
 			<input type="hidden" name="category" id="category"/>
@@ -36,7 +41,11 @@
 				<input type="text" name="label" id="label" />
 			</div>
 			<div>
-				<label for="js">własny JS</label>
+				<label for="ownJs">własny JS</label>
+				<input type="checkbox" name="ownJs" id="ownJs" value="true"/>
+			</div>
+			<div>
+				<label for="js">kod JS</label>
 				<input type="text" name="js" id="js" />
 			</div>
 			<div>
@@ -57,7 +66,7 @@
 			</div>
 			<div>
 				<label for="subject">Temat (opcjonalny)</label>
-				<input type="text" name="sibject" id="subject" />
+				<input type="text" name="subject" id="subject" />
 			</div>
 			<div>
 				<label for="content">Treść</label>
@@ -68,10 +77,18 @@
 				<input type="checkbox" name="referer" id="referer" checked="checked" value="true"/>
 			</div>
 			<div>
+				<label for="referer">Dodać id właściciela</label>
+				<input type="checkbox" name="addOwner" id="addOwner" value="true"/>
+			</div>
+			<div>
 				<label for="subjectPrefix">Prefix tytułu</label>
 				<input type="text" name="subjectPrefix" id="subjectPrefix" />
 			</div>
-			<button class="action" data-onclick="addItem(); return false;">Dodaj</button>
+			<div>
+				<label for="remove">Do usunięcia z docelowej nazwy</label>
+				<input type="text" name="remove" id="remove" />
+			</div>
+			<button class="action" data-onclick="addItem();">Dodaj</button>
 			<button class="action" data-onclick="$('#addItem').hide(); return false;">Anuluj</button>
 		</form>
 	</div>

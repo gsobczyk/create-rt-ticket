@@ -1,80 +1,91 @@
-var initialCategories = {
-	"categories":[
-		{
-			"category":"LM",
-			"items":[
-				{
-					"label":"lm24 - Zmiany",
-					"data":{
-						"queue":33,
-						"client":"Leroy Merlin",
-						"project":"Aktualizacje",
-						"referer":true
-					}
-				},
-				{
-					"label":"lm24 - Błąd - Problemy",
-					"data":{
-						"queue":33,
-						"client":"Leroy Merlin",
-						"project":"LM-opieka-serwisowa-ecommerce",
-						"referer":true
-					}
-				},
-				{
-					"label":"LM - Deploy",
-					"data":{
-						"ownJs":true,
-						"js":"tag = prompt('Tag', $.formatDateTime('yy-mm-dd', new Date())); if (tag) createTicket({queue:'81', klient:'Leroy Merlin', projekt:'Aktualizacje', cc:'lm@unity.pl', content:'Proszę o poranny deploy aplikacji leroymerlin.pl z taga '+tag, subject:'poranny deploy', referer: 'false'})"
-					}
+var initialCategories = [
+	{
+		"category":"LM",
+		"items":[
+			{
+				"label":"lm24 - Zmiany",
+				"data":{
+					"queue":33,
+					"client":"Leroy Merlin",
+					"project":"Aktualizacje",
+					"referer":true,
+					"addOwner":true,
+					"subjectPrefix":"LM",
+					"remove":" - Unity - Extranet Leroy Merlin"
 				}
-			]
-		},
-		{
-			"category":"MIG",
-			"items":[
-				{
-					"label":"MIG - Zmiany",
-					"data":{
-						"queue":33,
-						"client":"MIG",
-						"project":"Aktualizacje",
-						"cc":"anna.stolarczyk@unity.pl,grzegorz.sobczyk@unity.pl,adrian.adamski@unity.pl",
-						"subjectPrefix":"MIG Z#{{ID}}",
-						"referer":true
-					}
-				},
-				{
-					"label":"MIG - Deploy",
-					"data":{
-						"ownJs":true,
-						"js":"tag = prompt('Tag', 'PROD_'+$.formatDateTime('yy-mm-dd', new Date()));if (tag) createTicket({queue:'81', klient:'MIG', projekt:'MIG-opieka-serwisowa', cc:'anna.stolarczyk@unity.pl,grzegorz.sobczyk@unity.pl,adrian.adamski@unity.pl', content:'Proszę o poranny deploy wszystkich aplikacji MIG\\\'a z taga '+tag, subject:'poranny deploy', refers: false})"
-					}
+			},
+			{
+				"label":"lm24 - Błąd - Problemy",
+				"data":{
+					"queue":33,
+					"client":"Leroy Merlin",
+					"project":"LM-opieka-serwisowa-ecommerce",
+					"referer":true,
+					"addOwner":true,
+					"subjectPrefix":"LM",
+					"remove":" - Unity - Extranet Leroy Merlin"
 				}
-			]
-		},
-		{
-			"category":"Agora",
-			"items":[
-				{
-					"label":"Agora - Aktualizacje",
-					"data":{
-						"queue":33,
-						"client":"Agora",
-						"project":"Aktualizacje",
-						"subjectPrefix":"Agora m{{ID}}",
-						"referer":true
-					}
+			},
+			{
+				"label":"LM - Deploy",
+				"data":{
+					"ownJs":true,
+					"js":"tag = prompt('Tag', $.formatDateTime('yy-mm-dd', new Date())); if (tag) createTicket({queue:'81', klient:'Leroy Merlin', projekt:'Aktualizacje', cc:'lm@unity.pl', content:'Proszę o poranny deploy aplikacji leroymerlin.pl z taga '+tag, subject:'poranny deploy', referer: 'false'})"
 				}
-			]
-		}
-	]
-}
+			}
+		]
+	},
+	{
+		"category":"MIG",
+		"items":[
+			{
+				"label":"MIG - Zmiany",
+				"data":{
+					"queue":33,
+					"client":"MIG",
+					"project":"Aktualizacje",
+					"cc":"anna.stolarczyk@unity.pl,grzegorz.sobczyk@unity.pl,adrian.adamski@unity.pl",
+					"subjectPrefix":"MIG Z#{{ID}}",
+					"referer":true,
+					"addOwner":true
+				}
+			},
+			{
+				"label":"MIG - Deploy",
+				"data":{
+					"ownJs":true,
+					"js":"tag = prompt('Tag', 'PROD_'+$.formatDateTime('yy-mm-dd', new Date()));if (tag) createTicket({queue:'81', klient:'MIG', projekt:'MIG-opieka-serwisowa', cc:'anna.stolarczyk@unity.pl,grzegorz.sobczyk@unity.pl,adrian.adamski@unity.pl', content:'Proszę o poranny deploy wszystkich aplikacji MIG\\\'a z taga '+tag, subject:'poranny deploy', refers: false})"
+				}
+			}
+		]
+	},
+	{
+		"category":"Agora",
+		"items":[
+			{
+				"label":"Agora - Aktualizacje",
+				"data":{
+					"queue":33,
+					"client":"Agora",
+					"project":"Aktualizacje",
+					"subjectPrefix":"Agora m{{ID}}",
+					"referer":true,
+					"addOwner":true
+				}
+			}
+		]
+	}
+];
+
 
 function getSettings() {
 	var settings = kango.storage.getItem('settings');
 	if ($.isEmptyObject(settings)) {
-		settings = initSettings();
+		settings = {};
+		initialCategories;
+	}
+	if ($.isEmptyObject(settings.categories)) {
+		settings.categories = initialCategories;
 	}
 	return settings;
 }
@@ -87,9 +98,6 @@ function findElement(arr, propName, propValue) {
 			return arr[i];
 
 // will return undefined if not found; you could return a default instead
-}
-function initSettings() {
-	return initialCategories;
 }
 
 function deparamHref(url) {
@@ -131,6 +139,7 @@ function createTicket(data) {
 
 		var params = deparamHref(tab.getUrl());
 		subject = Hogan.compile(subject).render(params);
+		subject = subject.replace(data.remove, '');
 
 		var content = subject + " - " + tab.getUrl();
 		if (!$.isEmptyObject(data.content)) {
@@ -144,6 +153,10 @@ function createTicket(data) {
 		if (!$.isEmptyObject(data.referer) && (data.referer == false || data.referer == 'false')) {
 			refersTo = "";
 		}
+		var owner = "XXX";
+		if (!$.isEmptyObject(data.addOwner) && (data.addOwner == true || data.addOwner == 'true')) {
+			owner = getSettings().owner;
+		}
 		var createUrl = rtCreateUrl+
 			"?Queue="+data.queue+
 			"&Subject="+encodeURIComponent(subject)+
@@ -153,7 +166,7 @@ function createTicket(data) {
 			"&Object-RT::Ticket--CustomField-16-Value="+encodeURIComponent(data.klient)+
 			"&Object-RT::Ticket--CustomField-21-Value="+encodeURIComponent(data.klient+"/"+data.projekt)+
 				// "&Object-RT::Ticket--CustomField-17-Value="+encodeURIComponent(data.rozliczajacy)+
-			"&Owner=XXX";
+			"&Owner="+owner;
 		kango.browser.tabs.create({url: createUrl});
 	});
 	KangoAPI.closeWindow();
@@ -221,9 +234,6 @@ function removeCategory(category) {
   saveSettings(settings);
   initOptionsTree();
 }
-//function addItem(category) {
-//	var cat = addCategory(category);
-//}
 function addItemForCategory(category){
   $('#category').val(category);
   $('#addItem').show();
@@ -235,20 +245,58 @@ function addItem(){
   var label = form.label;
   delete form.category;
   delete form.label;
-  cat.items.push({"label":label, "data":form});
+  var existed = findElement(cat.items, "label", label)
+  if (!$.isEmptyObject(existed)){
+	  delete existed.data.ownJs;
+	  delete existed.data.referer;
+	  delete existed.data.addOwner;
+	  $.extend(existed.data, form)
+  } else {
+	  cat.items.push({"label":label, "data":form});
+  }
   saveSettings(settings);
   $('#addItem').hide();
   initOptionsTree();
+  return false;
 }
-function removeItem(category, item) {
+function removeItem(category, label) {
   var settings = getSettings();
   var cat = findElement(settings.categories, "category", category)
-  var idx = findElement(cat.items, "label", item)
-  cat.items.splice(idx, 1);
+  var item = findElement(cat.items, "label", label)
+  cat.items.splice(item, 1);
   saveSettings(settings);
   initOptionsTree();
 }
-function resetSettings(){
-  saveSettings({});
+function editItem(category, label) {
+  var settings = getSettings();
+  var cat = findElement(settings.categories, "category", category)
+  var item = findElement(cat.items, "label", label)
+  $('#category').val(category);
+  $('#label').val(item.label);
+  $('#ownJs').prop('checked', item.data.ownJs);
+  $('#js').val(item.data.js);
+  $('#queue').val(item.data.queue);
+  $('#client').val(item.data.client);
+  $('#project').val(item.data.project);
+  $('#cc').val(item.data.cc);
+  $('#subject').val(item.data.subject);
+  $('#content').val(item.data.content);
+  $('#referer').prop('checked', item.data.referer);
+  $('#addOwner').prop('checked', item.data.addOwner);
+  $('#subjectPrefix').val(item.data.subjectPrefix);
+  $('#remove').val(item.data.remove);
+  $('#addItem').show();
+}
+function resetCategories(){
+  var settings = getSettings();
+  settings.categories = initialCategories;
+  saveSettings(settings);
+  initOptionsTree();
+}
+function saveOwner(){
+  var owner = $('#ownerId').val();
+  var settings = getSettings();
+  settings.owner = owner;
+  saveSettings(settings);
   initOptionsTree();
 }
