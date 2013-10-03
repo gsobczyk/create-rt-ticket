@@ -82,7 +82,6 @@ function getSettings() {
 	var settings = kango.storage.getItem('settings');
 	if ($.isEmptyObject(settings)) {
 		settings = {};
-		initialCategories;
 	}
 	if ($.isEmptyObject(settings.categories)) {
 		settings.categories = initialCategories;
@@ -126,12 +125,12 @@ var rtCreateUrl = 'https://rt.contium.pl/Ticket/Create.html';
 function createTicket(data) {
 	kango.browser.tabs.getCurrent(function(tab) {
 		var subject;
-		if (!$.isEmptyObject(data.subjectPrefix)) {
+		if (data.subjectPrefix) {
 			subject = data.subjectPrefix + " - ";
 		} else {
 			subject = data.klient + " - " + data.projekt + " - ";
 		}
-		if (!$.isEmptyObject(data.subject)) {
+		if (data.subject) {
 			subject += data.subject;
 		} else {
 			subject += tab.getTitle().replace("#", "");
@@ -142,19 +141,19 @@ function createTicket(data) {
 		subject = subject.replace(data.remove, '');
 
 		var content = subject + " - " + tab.getUrl();
-		if (!$.isEmptyObject(data.content)) {
+		if (data.content) {
 			content = data.content;
 		}
 		var cc = "";
-		if (!$.isEmptyObject(data.cc)) {
+		if (data.cc) {
 			cc = data.cc;
 		}
 		var refersTo = tab.getUrl();
-		if (!$.isEmptyObject(data.referer) && (data.referer == false || data.referer == 'false')) {
+		if (data.referer && (data.referer == false || data.referer == 'false')) {
 			refersTo = "";
 		}
-		var owner = "XXX";
-		if (!$.isEmptyObject(data.addOwner) && (data.addOwner == true || data.addOwner == 'true')) {
+		var owner = "None";
+		if (data.addOwner && (data.addOwner == true || data.addOwner == 'true')) {
 			owner = getSettings().owner;
 		}
 		var createUrl = rtCreateUrl+
@@ -215,7 +214,7 @@ function initOptionsTree() {
 function addCategory() {
   var settings = getSettings();
   var category = prompt('Kategoria');
-  if (!$.isEmptyObject(category)) {
+  if (category) {
     var addedCategory = findElement(settings.categories, "category", category);
     if ($.isEmptyObject(addedCategory)){
       addedCategory = {"category":category, data:[]};
