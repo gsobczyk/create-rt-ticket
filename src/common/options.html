@@ -4,93 +4,129 @@
 	<meta charset="UTF-8" />
 	<title>Create ticket from title and url</title>
 	<script type="text/javascript" src="kango-ui/kango_api.js"></script>
-	<script type="text/javascript" src="jquery-1.10.2.js"></script>
-	<script type="text/javascript" src="jquery.formatDateTime.js"></script>
-	<script type="text/javascript" src="hogan-2.0.0.js"></script>
-	<script type="text/javascript" src="common.js"></script>
-	<script type="text/javascript" src="options.js"></script>
+	<script type="text/javascript" src="js/jquery-1.10.2.js"></script>
+	<script type="text/javascript" src="js/jquery.formatDateTime.js"></script>
+	<script type="text/javascript" src="js/hogan-2.0.0.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script type="text/javascript" src="js/options.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/kube.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/master.css" />
+	<link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.css">
 	<script id="tree-template" type="text/mustache">
-{{#categories}}
-	{{category}} - <button class="action" data-onclick="removeCategory('{{category}}')">usuń</button>
-	<ul>
-		{{#items}}
-			<li>{{label}} - <button class="action" data-onclick="removeItem('{{category}}', '{{label}}')">usuń</button> <button class="action" data-onclick="editItem('{{category}}', '{{label}}')">edytuj</button></li>
-		{{/items}}
-		<li><button class="action" data-onclick="addItemForCategory('{{category}}')">dodaj kolejny</button></li>
-	</ul>
-{{/categories}}
+<h2>Użytkownik</h2>
 <div>
 	<label for="ownerId">id usera (np: 98905, pobrany np. przy użyciu żądania https://rt.contium.pl/REST/1.0/user/gsobczyk)</label>
 	<input type="text" name="ownerId" id="ownerId" value="{{owner}}"/>
-	<button class="action" data-onclick="saveOwner()">zapisz</button>
+	<button class="action btn btn-green" data-onclick="saveOwner()"><i class="pull-left icon-save"></i>zapisz</button>
+</div>
+<h2>Drzewo kategorii</h2>
+<div class="units-row">
+	<div class="unit-80">
+		<ul>
+		{{#categories}}
+			<li><strong>{{category}}</strong> <a href="javascript:void(0)" class="action label-badge label-red" data-onclick="removeCategory('{{category}}')"><i class="pull-left icon-remove"></i>usuń</a></li>
+			<ul>
+				{{#items}}
+					<li>{{label}} <a href="javascript:void(0)" class="action label-badge label-red" data-onclick="removeItem('{{category}}', '{{label}}')"><i class="pull-left icon-remove"></i>usuń</a> <a href="javascript:void(0)" class="action label-badge" data-onclick="editItem('{{category}}', '{{label}}')"><i class="pull-left icon-edit"></i>edytuj</a></li>
+				{{/items}}
+				<li><a href="javascript:void(0)" class="action label-badge label-green" data-onclick="addItemForCategory('{{category}}')"><i class="pull-left icon-plus"></i>dodaj kolejny</a></li>
+			</ul>
+		{{/categories}}
+		</ul>
+		<button class="action btn btn-green" data-onclick="addCategory()"><i class="pull-left icon-plus"></i>dodaj kategorię</button>
+	</div>
 </div>
 	</script>
 </head>
 <body>
-	<div id="tree">
-		
-	</div>
-	<button class="action" data-onclick="addCategory()">dodaj kategorię</button>
-	<button class="action" data-onclick="resetCategories()">przywróć domyślne kategorie</button>
-	<div id="addItem" style="display: none;">
-		<form>
-			<input type="hidden" name="category" id="category"/>
-			Możliwe jest wpisywanie wyrażeń typu {{ID}}, które będą zastąpione parametrem z URLa.
-			<div>
-				<label for="label">Etykieta</label>
-				<input type="text" name="label" id="label" />
+	<div class="wrap">
+		<h1>Ustawienia</h1>
+		<div id="tree"></div>
+		<h2>Kopia zapasowa</h2>
+		<div class="units-row">
+			<div class="unit-80">
+				<span class="btn-group">
+					<button class="action btn btn-green" data-onclick="backupCategories()"><i class="pull-left icon-save"></i>zrób kopię</button>
+					<button class="action btn btn-orange" data-onclick="restoreCategories()"><i class="pull-left icon-refresh"></i>przywróć kopię</button>
+					<button class="action btn btn-red" data-onclick="resetCategories()"><i class="pull-left icon-refresh"></i>przywróć domyślne</button>
+				</span>
 			</div>
-			<div>
-				<label for="ownJs">własny JS</label>
-				<input type="checkbox" name="ownJs" id="ownJs" value="true"/>
+		</div>
+		<div id="addItem" style="display: none;">
+			<h2>Dodawanie/edycja pozycji</h2>
+			<div class="units-row">
+				<div class="unit-centered">
+					<form class="forms forms-columnar">
+						<input type="hidden" name="category" id="category"/>
+						<p>
+							<label for="label">Etykieta</label>
+							<input type="text" class="width-80" name="label" id="label" />
+							<span class="forms-desc">Możliwe jest wpisywanie wyrażeń typu {{ID}}, które będą zastąpione parametrem z URLa.</span>
+						</p>
+						<p>
+							<label for="ownJs">własny JS</label>
+							<input type="checkbox" name="ownJs" id="ownJs" value="true"/>
+						</p>
+						<p>
+							<label for="js">kod JS</label>
+							<input type="text" class="width-80" name="js" id="js" />
+							<span class="forms-desc">np. <br/>
+								<code class="width-80">tag = prompt('Tag', $.formatDateTime('yy-mm-dd', new Date())); if (tag) createTicket({queue:'81', klient:'Leroy Merlin', projekt:'Aktualizacje', cc:'lm@unity.pl', content:'Proszę o poranny deploy aplikacji leroymerlin.pl z taga '+tag, subject:'poranny deploy', referer: 'false'})</code>
+							</span>
+						</p>
+						<p>
+							<label for="queue">Id kolejki</label>
+							<input type="text" class="width-80" name="queue" id="queue" />
+						</p>
+						<p>
+							<label for="client">Klient</label>
+							<input type="text" class="width-80" name="client" id="client" />
+						</p>
+						<p>
+							<label for="project">Projekt</label>
+							<input type="text" class="width-80" name="project" id="project" />
+						</p>
+						<p>
+							<label for="cc">CC (bez spacji, oddzielone przecinkiem)</label>
+							<input type="text" class="width-80" name="cc" id="cc" />
+						</p>
+						<p>
+							<label for="subjectPrefix">Prefix tytułu</label>
+							<input type="text" class="width-80" name="subjectPrefix" id="subjectPrefix" />
+						</p>
+						<p>
+							<label for="subject">Tytuł</label>
+							<input type="text" class="width-80" placeholder="domyślnie tytuł strony" name="subject" id="subject" />
+							<span class="forms-desc">opcjonalny</span>
+						</p>
+						<p>
+							<label for="remove">Do usunięcia z docelowej nazwy Tutułu</label>
+							<input type="text" class="width-80" name="remove" id="remove" />
+						</p>
+						<p>
+							<label for="content">Treść</label>
+							<textarea name="content" class="width-80" placeholder="domyślnie tytuł strony/zadania - adres astrony"  id="content" cols="30" rows="10"></textarea>
+						</p>
+						<p>
+							<label for="referer">Powiązać z odwiedzaną stroną</label>
+							<input type="checkbox" name="referer" id="referer" checked="checked" value="true"/>
+							<span class="forms-desc">Dodaje url odwiedzanej strony jako Powiązane z</span>
+						</p>
+						<p>
+							<label for="referer">Dodać id właściciela</label>
+							<input type="checkbox" name="addOwner" id="addOwner" value="true"/>
+							<span class="forms-desc">Ustawia właściciela</span>
+						</p>
+						<p>
+							<span class="btn-group">
+								<button class="action btn btn-green" data-onclick="addItem();"><i class="pull-left icon-save"></i>Dodaj</button>
+								<button class="action btn btn-red" data-onclick="$('#addItem').hide(); return false;"><i class="pull-left icon-reply"></i>Anuluj</button>
+							</span>
+						</p>
+					</form>
+				</div>
 			</div>
-			<div>
-				<label for="js">kod JS</label>
-				<input type="text" name="js" id="js" />
-			</div>
-			<div>
-				<label for="queue">Id kolejki</label>
-				<input type="text" name="queue" id="queue" />
-			</div>
-			<div>
-				<label for="client">Klient</label>
-				<input type="text" name="client" id="client" />
-			</div>
-			<div>
-				<label for="project">Projekt</label>
-				<input type="text" name="project" id="project" />
-			</div>
-			<div>
-				<label for="cc">CC (bez spacji, oddzielone przecinkiem)</label>
-				<input type="text" name="cc" id="cc" />
-			</div>
-			<div>
-				<label for="subject">Temat (opcjonalny)</label>
-				<input type="text" name="subject" id="subject" />
-			</div>
-			<div>
-				<label for="content">Treść</label>
-				<textarea name="content" id="content" cols="30" rows="10"></textarea>
-			</div>
-			<div>
-				<label for="referer">Powiązać z odwiedzaną stroną</label>
-				<input type="checkbox" name="referer" id="referer" checked="checked" value="true"/>
-			</div>
-			<div>
-				<label for="referer">Dodać id właściciela</label>
-				<input type="checkbox" name="addOwner" id="addOwner" value="true"/>
-			</div>
-			<div>
-				<label for="subjectPrefix">Prefix tytułu</label>
-				<input type="text" name="subjectPrefix" id="subjectPrefix" />
-			</div>
-			<div>
-				<label for="remove">Do usunięcia z docelowej nazwy</label>
-				<input type="text" name="remove" id="remove" />
-			</div>
-			<button class="action" data-onclick="addItem();">Dodaj</button>
-			<button class="action" data-onclick="$('#addItem').hide(); return false;">Anuluj</button>
-		</form>
+		</div>
 	</div>
 </body>
 </html>

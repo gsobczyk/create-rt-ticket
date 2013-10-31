@@ -194,7 +194,7 @@ function initPopupTree() {
   var settings = getSettings();
   var compiled = Hogan.compile(template).render(settings);
   $('#tree').html(compiled);
-  $('button.action').click(function (){
+  $('.action').click(function (){
     var onclick = $(this).data('onclick');
     eval(onclick);
   });
@@ -206,7 +206,7 @@ function initOptionsTree() {
   var settings = getSettings();
   var compiled = Hogan.compile(template).render(settings);
   $('#tree').html(compiled);
-  $('button.action').click(function (){
+  $('.action').click(function (){
     var onclick = $(this).data('onclick');
     eval(onclick);
   });
@@ -226,12 +226,14 @@ function addCategory() {
   return addedCategory;
 }
 function removeCategory(category) {
-  var settings = getSettings();
-  var cat = findElement(settings.categories, "category", category)
-  var idx = settings.categories.indexOf(cat);
-  settings.categories.splice(idx, 1);
-  saveSettings(settings);
-  initOptionsTree();
+  if (confirm('Usunąć?')){
+	  var settings = getSettings();
+	  var cat = findElement(settings.categories, "category", category)
+	  var idx = settings.categories.indexOf(cat);
+	  settings.categories.splice(idx, 1);
+	  saveSettings(settings);
+	  initOptionsTree();
+  }
 }
 function addItemForCategory(category){
   $('#category').val(category);
@@ -259,12 +261,14 @@ function addItem(){
   return false;
 }
 function removeItem(category, label) {
-  var settings = getSettings();
-  var cat = findElement(settings.categories, "category", category)
-  var item = findElement(cat.items, "label", label)
-  cat.items.splice(item, 1);
-  saveSettings(settings);
-  initOptionsTree();
+  if (confirm('Usunąć?')){
+	  var settings = getSettings();
+	  var cat = findElement(settings.categories, "category", category)
+	  var item = findElement(cat.items, "label", label)
+	  cat.items.splice(item, 1);
+	  saveSettings(settings);
+	  initOptionsTree();
+  }
 }
 function editItem(category, label) {
   var settings = getSettings();
@@ -290,6 +294,20 @@ function resetCategories(){
   var settings = getSettings();
   settings.categories = initialCategories;
   saveSettings(settings);
+  initOptionsTree();
+}
+function backupCategories(){
+  var settings = getSettings();
+  settings.backupCategories = settings.categories;
+  saveSettings(settings);
+  alert('Zapisano');
+  initOptionsTree();
+}
+function restoreCategories(){
+  var settings = getSettings();
+  settings.categories = settings.backupCategories;
+  saveSettings(settings);
+  alert('Przywrócono');
   initOptionsTree();
 }
 function saveOwner(){

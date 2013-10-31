@@ -4,22 +4,24 @@
 	<meta charset="UTF-8" />
 	<title>Create ticket from title and url</title>
 	<script type="text/javascript" src="kango-ui/kango_api.js"></script>
-	<script type="text/javascript" src="jquery-1.10.2.js"></script>
-	<script type="text/javascript" src="jquery.formatDateTime.js"></script>
-	<script type="text/javascript" src="deparam.js"></script>
-	<script type="text/javascript" src="hogan-2.0.0.js"></script>
-	<script type="text/javascript" src="common.js"></script>
-	<script type="text/javascript" src="popup.js"></script>
+	<script type="text/javascript" src="js/jquery-1.10.2.js"></script>
+	<script type="text/javascript" src="js/jquery.formatDateTime.js"></script>
+	<script type="text/javascript" src="js/deparam.js"></script>
+	<script type="text/javascript" src="js/hogan-2.0.0.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script type="text/javascript" src="js/popup.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/kube.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/master.css" />
 	<script id="tree-template" type="text/mustache">
 {{#categories}}
-	{{category}}:
+	<strong>{{category}}</strong>:
 	<ul>
 		{{#items}}
 			{{#data.ownJs}}
-				<li><button class="action" data-onclick="{{data.js}}">{{label}}</button></li>
+				<li><a href="javascript:void(0)" class="action" data-onclick="{{data.js}}">{{label}}</a></li>
 			{{/data.ownJs}}
 			{{^data.ownJs}}
-				<li><button class="action" data-onclick="createTicket({queue:'{{data.queue}}', klient:'{{data.client}}', projekt:'{{data.project}}', cc:'{{data.cc}}', subject:'{{data.subject}}', subjectPrefix:'{{data.subjectPrefix}}', content:'{{data.content}}', referer: {{data.referer}}, addOwner: {{data.addOwner}}, remove:'{{data.remove}}' })">{{label}}</button></li>
+				<li><a href="javascript:void(0)" class="action" data-onclick="createTicket({queue:'{{data.queue}}', klient:'{{data.client}}', projekt:'{{data.project}}', cc:'{{data.cc}}', subject:'{{data.subject}}', subjectPrefix:'{{data.subjectPrefix}}', content:'{{data.content}}', referer: {{data.referer}}, addOwner: {{data.addOwner}}, remove:'{{data.remove}}' })">{{label}}</a></li>
 			{{/data.ownJs}}
 		{{/items}}
 	</ul>
@@ -27,11 +29,15 @@
 	</script>
 </head>
 <body>
-	<div id="tree">
-		
+	<div class="wrap">
+		<div id="tree">
+			
+		</div>
+		<span class="btn-group">
+			<button id="options" class="btn btn-orange" type="button">opcje</button>
+			<button id="popup-close" class="btn btn-red" type="button">zamknij</button>
+		</span>
 	</div>
-	<button id="options" type="button">opcje</button>
-	<button id="popup-close" type="button">zamknij</button>
 	<!-- 
 	LM:
 	<ul>
