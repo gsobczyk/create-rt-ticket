@@ -92,9 +92,11 @@ function saveSettings(settings){
 	kango.storage.setItem('settings', settings);
 }
 function findElement(arr, propName, propValue) {
-	for (var i=0; i < arr.length; i++)
-		if (arr[i][propName] == propValue)
-			return arr[i];
+	if (arr){
+		for (var i=0; i < arr.length; i++)
+			if (arr[i][propName] == propValue)
+				return arr[i];
+	}
 
 // will return undefined if not found; you could return a default instead
 }
@@ -246,6 +248,9 @@ function addItem(){
   var label = form.label;
   delete form.category;
   delete form.label;
+  if (!cat.items){
+	  cat.items = [];
+  }
   var existed = findElement(cat.items, "label", label)
   if (!$.isEmptyObject(existed)){
 	  delete existed.data.ownJs;
