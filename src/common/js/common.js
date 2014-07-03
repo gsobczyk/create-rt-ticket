@@ -7,7 +7,7 @@ var initialCategories = [
 				"data":{
 					"queue":33,
 					"client":"Leroy Merlin",
-					"project":"Aktualizacje",
+					"project":"LM Aktualizacje",
 					"referer":true,
 					"addOwner":true,
 					"subjectPrefix":"LM",
@@ -19,7 +19,7 @@ var initialCategories = [
 				"data":{
 					"queue":33,
 					"client":"Leroy Merlin",
-					"project":"LM-opieka-serwisowa-ecommerce",
+					"project":"serwis",
 					"referer":true,
 					"addOwner":true,
 					"subjectPrefix":"LM",
@@ -30,7 +30,7 @@ var initialCategories = [
 				"label":"LM - Deploy",
 				"data":{
 					"ownJs":true,
-					"js":"tag = prompt('Tag', $.formatDateTime('yy-mm-dd', new Date())); if (tag) createTicket({queue:'81', klient:'Leroy Merlin', projekt:'Aktualizacje', cc:'lm@unity.pl', content:'Proszę o poranny deploy aplikacji leroymerlin.pl z taga '+tag, subject:'poranny deploy', referer: 'false'})"
+					"js":"tag = prompt('Tag', $.formatDateTime('yy-mm-dd', new Date())); if (tag) createTicket({queue:'81', klient:'Leroy Merlin', projekt:'LM Aktualizacje', cc:'lm@unity.pl', content:'Proszę o poranny deploy aplikacji leroymerlin.pl z taga '+tag, subject:'poranny deploy', referer: 'false'})"
 				}
 			}
 		]
